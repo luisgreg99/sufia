@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 # Please see sufia.gemspec for dependency information.
 gemspec
 
+gem 'active-fedora', '< 9.8.0'
+
 group :development, :test do
   gem "simplecov", require: false
   gem 'byebug' unless ENV['CI']

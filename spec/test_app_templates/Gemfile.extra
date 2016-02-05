@@ -2,6 +2,7 @@
 
 # Required for doing pagination inside an engine. See https://github.com/amatsuda/kaminari/pull/322
 gem 'kaminari', github: 'jcoyne/kaminari', branch: 'sufia'
+gem 'active-fedora', '< 9.8.0'
 
 group :development do
   gem 'better_errors'
