@@ -9,7 +9,7 @@ module Importer
 
     def import_files(files_pattern)
       files = Dir.glob(files_pattern)
-      puts "Processing #{files.count} files from #{files_pattern}..."
+      Rails.logger.debug "[IMPORT] Processing #{files.count} files from #{files_pattern}..."
       files.each do |file_name|
         import_file(file_name)
       end
@@ -17,16 +17,17 @@ module Importer
 
     def import_file(file_name)
       json = File.read(file_name)
-      generic_file = JSON.parse(json, object_class:OpenStruct)
+      generic_file = JSON.parse(json, object_class: OpenStruct)
       generic_work = work_from_gf(generic_file)
-      puts "File #{File.basename(file_name)} imported as work #{generic_work.id}"
+      Rails.logger.debug "[IMPORT] File #{File.basename(file_name)} imported as work #{generic_work.id}"
     end
 
     private
+
       def work_from_gf(gf)
         # File Set
         # TODO: missing properties
-        fs = FileSet.new()
+        fs = FileSet.new
         fs.mime_type = gf.characterization.mime_type
         fs.format_label = gf.characterization.format_label
         fs.apply_depositor_metadata(gf.depositor)
@@ -37,7 +38,7 @@ module Importer
         Hydra::Works::UploadFileToFileSet.call(fs, file)
 
         # Generic Work
-        gw = GenericWork.new()
+        gw = GenericWork.new
         gw.id = gf.id if @preserve_ids
         gw.apply_depositor_metadata(gf.depositor)
         gw.label                  = gf.label
@@ -70,7 +71,7 @@ module Importer
 
       def sufia6_content(id)
         content_uri = "#{@sufia6_root_uri}/#{ActiveFedora::Noid.treeify(id)}/content"
-        file = open(content_uri, :http_basic_authentication=> [@sufia6_user, @sufia6_password])
+        file = open(content_uri, http_basic_authentication: [@sufia6_user, @sufia6_password])
         file
       end
   end
